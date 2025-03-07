@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model albums {
+  id           Int      @id @default(autoincrement())
+  album_title  String   @db.VarChar(255)
+  desc         String?  @db.VarChar(2000)
+  artist_id    Int
+  release_date DateTime @db.Date
+  cover        String   @db.Text
+  artists      artists  @relation(fields: [artist_id], references: [id], onUpdate: Restrict, map: "albums_ibfk_1")
+  songs        songs[]
+
+  @@index([artist_id], map: "artist_id")
+}
+
+model artists {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  biography    String?        @db.Text
+  image_url    String         @db.VarChar(255)
+  albums       albums[]
+  song_artists song_artists[]
+}
+
+model playlist {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  author           String             @db.VarChar(255)
+  createTime       DateTime?          @db.Date
+  desc             String?            @db.VarChar(255)
+  tags             Json?
+  isPrivate        String?            @db.VarChar(255)
+  img              String?            @db.VarChar(255)
+  user_id          Int
+  playlist_collect playlist_collect[]
+  playlist_songs   playlist_songs[]
+
+  @@index([author], map: "name")
+}
+
+model playlist_collect {
+  user_id      Int
+  playlist_id  Int
+  collected_at DateTime? @default(now()) @db.DateTime(0)
+  users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "playlist_collect_ibfk_1")
+  playlist     playlist  @relation(fields: [playlist_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "playlist_collect_ibfk_2")
+
+  @@id([user_id, playlist_id])
+  @@index([playlist_id], map: "idx_user_collections_playlist_id")
+  @@index([user_id], map: "idx_user_collections_user_id")
+}
+
+model playlist_songs {
+  playlist_id Int
+  song_id     Int
+  playlist    playlist @relation(fields: [playlist_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "playlist_songs_ibfk_1")
+  songs       songs    @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "playlist_songs_ibfk_2")
+
+  @@id([playlist_id, song_id])
+  @@index([playlist_id], map: "idx_playlist_songs_playlist_id")
+  @@index([song_id], map: "idx_playlist_songs_song_id")
+}
+
+model song_artists {
+  song_id   Int
+  artist_id Int
+  artists   artists @relation(fields: [artist_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_song_artists_artist")
+  songs     songs   @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_song_artists_song")
+
+  @@id([song_id, artist_id])
+  @@index([artist_id], map: "fk_song_artists_artist")
+}
+
+model songs {
+  id               Int                @id @default(autoincrement())
+  song_title       String             @db.VarChar(255)
+  duration         Int?
+  file_path        String             @db.Text
+  albums_id        Int
+  lyric            String?            @db.VarChar(255)
+  tags             Json?
+  playlist_songs   playlist_songs[]
+  song_artists     song_artists[]
+  albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
+  user_likes_songs user_likes_songs[]
+
+  @@index([albums_id], map: "albums_id")
+}
+
+model user_likes_songs {
+  user_id  Int
+  song_id  Int
+  liked_at DateTime? @default(now()) @db.DateTime(0)
+  users    users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_1")
+  songs    songs     @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_2")
+
+  @@id([user_id, song_id])
+  @@index([song_id], map: "idx_user_likes_songs_song_id")
+  @@index([user_id], map: "idx_user_likes_songs_user_id")
+}
+
+model users {
+  id               Int                @id @default(autoincrement())
+  username         String             @unique(map: "unique_username") @db.VarChar(255)
+  password         String             @db.VarChar(255)
+  createdAt        DateTime?          @db.Date
+  cover            String?            @db.VarChar(255)
+  playlist_collect playlist_collect[]
+  user_likes_songs user_likes_songs[]
+}
+
+model account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
+  userId       String
+  expires      DateTime
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_fkey")
+}
+
+model user {
+  id            String    @id
+  name          String?
+  email         String?   @unique(map: "User_email_key")
+  emailVerified DateTime?
+  image         String?
+  account       account[]
+  session       session[]
+}
