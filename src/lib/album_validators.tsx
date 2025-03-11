@@ -17,10 +17,10 @@ export const AlbumBaseSchema = z.object({
   artist_id: z.coerce
     .number()
     .int("必须是整数ID")
-    .positive("艺术家ID不合法")
+    .positive("艺人ID不合法")
     .nullable()
     .refine((val) => val !== null, {
-      message: "请选择关联艺术家",
+      message: "请选择关联艺人",
     }),
 
   release_date: z.coerce

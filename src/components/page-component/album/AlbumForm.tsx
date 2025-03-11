@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -41,9 +42,11 @@ import {
   AlbumBaseSchema,
 } from "@/lib/album_validators";
 import type { ArtistColumn } from "@/lib/artist_validators";
+import { Textarea } from "@/components/ui/textarea";
+import { ImageUploader } from "@/components/common/img-uploader";
 
 interface AlbumFormProps {
-  albums: AlbumColumn;
+  albums: AlbumColumn | null;
   artists: ArtistColumn[];
 }
 
@@ -55,11 +58,11 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
   const title = albums ? "编辑专辑" : "新建专辑";
   const description = albums ? "修改专辑信息" : "添加新专辑";
   const toastMessage = albums ? "专辑更新成功" : "专辑创建成功";
-  const action = albums ? "保存修改" : "创建专辑";
+  const action = albums ? "保存" : "创建";
 
   const form = useForm<AlbumFormValues>({
     resolver: zodResolver(AlbumBaseSchema),
-    defaultValues: albums,
+    defaultValues: albums ?? undefined,
   });
 
   const { mutate: createAlbum } = api.albums.create.useMutation({
@@ -122,7 +125,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="mx-auto flex w-1/2 min-w-96 items-center justify-between">
         <Heading title={title} description={description} />
         {albums && (
           <Button
@@ -140,138 +143,156 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-8"
+          className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
         >
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-6">
+            {/* 专辑标题 */}
             <FormField
               control={form.control}
               name="album_title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>专辑标题</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="请输入专辑标题"
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <div className="flex items-center ">
+                    <FormLabel className=" flex-shrink-0">专辑标题：</FormLabel>
+                    <FormControl className="flex-grow">
+                      <Input
+                        {...field}
+                        placeholder="请输入专辑标题"
+                        disabled={loading}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-28" />
                 </FormItem>
               )}
             />
 
+            {/* 艺人作者 */}
             <FormField
               control={form.control}
               name="artist_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>艺人作者</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={(value) => field.onChange(Number(value))}
-                    value={field.value?.toString() ?? ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="选择艺术家" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {artists.map((artist) => (
-                        <SelectItem
-                          key={artist.id}
-                          value={artist.id.toString()}
-                        >
-                          {artist.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+                  <div className="flex items-center ">
+                    <FormLabel className=" flex-shrink-0">艺人作者：</FormLabel>
+                    <Select
+                      disabled={loading}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString() ?? ""}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="选择艺人" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {artists.map((artist) => (
+                          <SelectItem
+                            key={artist.id}
+                            value={artist.id.toString()}
+                          >
+                            {artist.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <FormMessage className="ml-28" />
                 </FormItem>
               )}
             />
 
+            {/* 发行日期 */}
             <FormField
               control={form.control}
               name="release_date"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>发行日期</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "yyyy-MM-dd")
-                          ) : (
-                            <span>选择日期</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value ?? undefined}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
+                <FormItem>
+                  <div className="flex items-center ">
+                    <FormLabel className=" flex-shrink-0">发行日期：</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl className="flex-grow">
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "yyyy-MM-dd")
+                            ) : (
+                              <span>选择日期</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ?? undefined}
+                          onSelect={field.onChange}
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <FormMessage className="ml-28" />
                 </FormItem>
               )}
             />
 
+            {/* 封面 */}
             <FormField
               control={form.control}
               name="cover"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>封面URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="输入封面图片地址"
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <div className="flex items-center ">
+                    <FormLabel className=" flex-shrink-0">封面图片：</FormLabel>
+                    <FormControl className="flex-grow">
+                      <ImageUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-28" />
                 </FormItem>
               )}
             />
 
+            {/* 专辑描述 */}
             <FormField
               control={form.control}
               name="desc"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>专辑描述</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value || ""}
-                      placeholder="输入专辑描述（可选）"
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                <FormItem>
+                  <div className="flex items-start">
+                    <FormLabel className="flex-shrink-0 pt-2">
+                      专辑描述：
+                    </FormLabel>
+                    <FormControl className="flex-grow">
+                      <Textarea
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="输入专辑描述（可选）"
+                        disabled={loading}
+                        rows={8} // 设置默认显示行高度
+                        className="resize-y" // 允许垂直调整大小
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-28" />
                 </FormItem>
               )}
             />
           </div>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 pl-4">
             <Button
               disabled={loading}
               type="button"

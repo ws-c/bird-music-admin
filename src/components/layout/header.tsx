@@ -16,7 +16,7 @@ export default function Header() {
           href={"/"}
           className="hidden items-start justify-between gap-2 md:flex"
         >
-          <Bird className="h-6 w-6" />
+          <Bird className="h-6 w-6 text-primary" />
           <h1 className="text-lg font-semibold">bird-music-admin</h1>
         </Link>
         <div className={cn("block md:!hidden")}>

@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { updateAlbumFormSchema, AlbumBaseSchema } from "@/lib/album_validators";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 
 export const albumsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -27,7 +31,7 @@ export const albumsRouter = createTRPCRouter({
       });
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(AlbumBaseSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.albums.create({
@@ -35,7 +39,7 @@ export const albumsRouter = createTRPCRouter({
       });
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(updateAlbumFormSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -47,7 +51,7 @@ export const albumsRouter = createTRPCRouter({
       });
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.number().int())
     .mutation(async ({ ctx, input }) => {
       // 先删除关联歌曲
