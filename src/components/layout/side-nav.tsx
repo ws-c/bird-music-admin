@@ -25,8 +25,8 @@ interface SideNavProps {
 export function SideNav({ items, setOpen, className }: SideNavProps) {
   const path = usePathname();
   const { isOpen } = useSidebar();
-  const [openItem, setOpenItem] = useState("");
-  const [lastOpenItem, setLastOpenItem] = useState("");
+  const [openItem, setOpenItem] = useState("歌曲管理");
+  const [lastOpenItem, setLastOpenItem] = useState("歌曲管理");
 
   useEffect(() => {
     if (isOpen) {
@@ -108,23 +108,18 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
                     }}
                     className={cn(
                       buttonVariants({ variant: "ghost" }),
-                      "group relative flex h-12 justify-start gap-x-3",
+                      "group relative flex h-12 justify-start gap-x-3 pl-8",
                       path === child.href &&
                         "bg-muted font-bold  hover:bg-muted"
                     )}
                   >
-                    <item.icon
+                    <child.icon
                       className={cn(
                         "h-5 w-5",
-                        path === child.href ? "text-primary" : item.color // 动态颜色
+                        path === child.href ? "text-primary" : child.color // 动态颜色
                       )}
                     />
-                    <div
-                      className={cn(
-                        "absolute left-12 text-base ",
-                        !isOpen && className
-                      )}
-                    >
+                    <div className={cn(" text-base ", !isOpen && className)}>
                       {child.title}
                     </div>
                   </Link>

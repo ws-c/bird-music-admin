@@ -18,12 +18,14 @@ export interface ImageUploaderProps {
   value?: string;
   onChange: (url: string) => void;
   className?: string;
+  catalogue: string;
 }
 
 export const ImageUploader = ({
   value,
   onChange,
   className,
+  catalogue,
 }: ImageUploaderProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [tempSrc, setTempSrc] = useState(""); // 用于对话框中的临时图片
@@ -107,7 +109,7 @@ export const ImageUploader = ({
         return toast.error("裁剪后的图片超过150KB，请调整裁剪区域或图片质量");
       }
       const url = await put(
-        `album_cover/${Date.now()}_${webpFile.name}`,
+        `${catalogue}/${Date.now()}_${webpFile.name}`,
         webpFile
       );
 

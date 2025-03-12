@@ -1,5 +1,5 @@
 import { Loading } from "@/components/common/loading";
-import { AlbumForm } from "@/components/page-component/album/AlbumForm";
+import { AlbumForm } from "@/components/page-component/album/form";
 import { api } from "@/utils/api";
 import React from "react";
 

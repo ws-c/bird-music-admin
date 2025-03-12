@@ -17,18 +17,19 @@ export const ArtistBaseSchema = z.object({
   image_url: z
     .string()
     .url("必须是有效的URL地址")
-    .max(255, "URL长度不能超过255个字符")
     .refine((url) => /\.(jpe?g|png|webp)$/i.test(url), {
       message: "仅支持 JPG/PNG/WEBP 格式的图片",
     }),
 });
 
-// 艺人数据类型（对应表格）
+// 艺人数据类型（表格）
 export type ArtistColumn = z.infer<typeof ArtistBaseSchema> & {
   id: number;
+  update_time: Date;
+  create_time: Date;
 };
 
-// 艺人表单数据类型
+// 艺人新建表单
 export type ArtistFormValues = z.infer<typeof ArtistBaseSchema>;
 
 // 艺人更新校验规则（包含ID）

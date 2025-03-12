@@ -35,7 +35,11 @@ export const albumsRouter = createTRPCRouter({
     .input(AlbumBaseSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.albums.create({
-        data: input,
+        data: {
+          ...input,
+          update_time: new Date(),
+          create_time: new Date(),
+        },
       });
     }),
 
@@ -47,6 +51,7 @@ export const albumsRouter = createTRPCRouter({
         where: { id },
         data: {
           ...data,
+          update_time: new Date(),
         },
       });
     }),

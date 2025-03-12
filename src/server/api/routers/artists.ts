@@ -1,21 +1,21 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
 import {
   ArtistBaseSchema,
   updateArtistFormSchema,
 } from "@/lib/artist_validators";
 
 export const artistsRouter = createTRPCRouter({
-  // 获取所有艺术家（按名称排序）
+  // 获取所有艺人（按名称排序）
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.artists.findMany({
       orderBy: {
-        name: "asc",
+        update_time: "desc",
       },
     });
   }),
 
-  // 获取艺术家详情
+  // 获取艺人详情
   getById: publicProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
@@ -24,19 +24,21 @@ export const artistsRouter = createTRPCRouter({
       });
     }),
 
-  // 创建艺术家
-  create: publicProcedure
+  // 创建艺人
+  create: protectedProcedure
     .input(ArtistBaseSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.artists.create({
         data: {
           ...input,
+          create_time: new Date(),
+          update_time: new Date(),
         },
       });
     }),
 
-  // 更新艺术家信息
-  update: publicProcedure
+  // 更新艺人信息
+  update: protectedProcedure
     .input(updateArtistFormSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -44,12 +46,13 @@ export const artistsRouter = createTRPCRouter({
         where: { id },
         data: {
           ...data,
+          update_time: new Date(),
         },
       });
     }),
 
-  // 安全删除艺术家及其关联数据
-  delete: publicProcedure
+  // 安全删除艺人及其关联数据
+  delete: protectedProcedure
     .input(z.number().int())
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.$transaction(async (prisma) => {
@@ -69,7 +72,7 @@ export const artistsRouter = createTRPCRouter({
           where: { artist_id: input },
         });
 
-        // 4. 最后删除艺术家（song_artists自动级联删除）
+        // 4. 最后删除艺人（song_artists自动级联删除）
         return await prisma.artists.delete({
           where: { id: input },
         });

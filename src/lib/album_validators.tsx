@@ -38,14 +38,16 @@ export const AlbumBaseSchema = z.object({
     }),
 });
 
-// 专辑数据类型（对应表格）
+// 专辑数据类型（表格）
 export type AlbumColumn = z.infer<typeof AlbumBaseSchema> & {
   id: number;
+  update_time: Date;
+  create_time: Date;
 };
-// 专辑数据类型（对应表单）
+// 专辑新建表单
 export type AlbumFormValues = z.infer<typeof AlbumBaseSchema>;
 
-// 专辑更新表单（需要包含ID）
+// 专辑更新校验规则（需要包含ID）
 export const updateAlbumFormSchema = AlbumBaseSchema.extend({
   id: z.number().int(),
 });

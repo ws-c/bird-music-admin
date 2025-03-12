@@ -24,7 +24,7 @@ export default function Sidebar({ className }: SidebarProps) {
       className={cn(
         `relative hidden h-screen border-r pt-20 md:block`,
         status && "duration-500",
-        isOpen ? "w-72" : "w-[78px]",
+        isOpen ? "w-60" : "w-[78px]",
         className
       )}
     >

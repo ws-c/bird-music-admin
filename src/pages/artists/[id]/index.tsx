@@ -1,32 +1,29 @@
 import { Loading } from "@/components/common/loading";
-import { AlbumForm } from "@/components/page-component/album/form";
+import { ArtistForm } from "@/components/page-component/artist/form";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import React from "react";
-const Album = () => {
+const Artist = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: albums, isLoading: isLoadingAlbums } =
-    api.albums.getById.useQuery(Number(id));
-
   const { data: artists, isLoading: isLoadingArtists } =
-    api.artists.getAll.useQuery();
+    api.artists.getById.useQuery(Number(id));
 
-  if (isLoadingAlbums || isLoadingArtists) {
+  if (isLoadingArtists) {
     return <Loading />;
   }
 
-  if (!artists || !albums) {
+  if (!artists) {
     return <div>加载失败</div>;
   }
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-4 md:p-8">
-        <AlbumForm albums={albums} artists={artists} />
+        <ArtistForm artists={artists} />
       </div>
     </div>
   );
 };
 
-export default Album;
+export default Artist;

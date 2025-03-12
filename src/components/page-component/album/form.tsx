@@ -257,6 +257,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
                       <ImageUploader
                         value={field.value}
                         onChange={field.onChange}
+                        catalogue="album_cover"
                       />
                     </FormControl>
                   </div>

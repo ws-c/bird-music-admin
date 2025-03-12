@@ -5,6 +5,6 @@ export interface NavItem {
     href: string;
     icon: LucideIcon;
     color?: string;
-    isChildren?: boolean;
+    isChildren?: boolean; // true 表示有子菜单
     children?: NavItem[];
 }

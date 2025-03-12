@@ -2,11 +2,11 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
-import { type AlbumColumn } from "@/lib/album_validators";
+import { type ArtistColumn } from "@/lib/artist_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
-export const columns: ColumnDef<AlbumColumn>[] = [
+export const columns: ColumnDef<ArtistColumn>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -33,59 +33,41 @@ export const columns: ColumnDef<AlbumColumn>[] = [
   },
   {
     accessorKey: "id",
-    header: "专辑ID",
+    header: "艺人ID",
     cell: ({ row }) => (
       <span className="text-muted-foreground">#{row.getValue("id")}</span>
     ),
   },
   {
-    accessorKey: "cover",
-    header: "封面",
+    accessorKey: "image_url",
+    header: "艺人图片",
     cell: ({ row }) => (
       <Image
         width={40}
         height={40}
-        src={row.getValue("cover")}
-        alt="专辑封面"
+        src={row.getValue("image_url")}
+        alt="艺人图片"
         className=" rounded object-cover"
       />
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "album_title",
-    header: "专辑标题",
+    accessorKey: "name",
+    header: "艺人名称",
     cell: ({ row }) => (
       <div className="max-w-[200px] truncate font-medium">
-        {row.getValue("album_title")}
+        {row.getValue("name")}
       </div>
     ),
   },
   {
-    accessorKey: "desc",
-    header: "专辑描述",
+    accessorKey: "biography",
+    header: "艺人简介",
     cell: ({ row }) => (
       <div className="max-w-[300px] truncate text-sm text-muted-foreground">
-        {row.getValue("desc") || "暂无描述"}
+        {row.getValue("biography") || "暂无简介"}
       </div>
-    ),
-  },
-  {
-    accessorKey: "release_date",
-    header: "发行日期",
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap">
-        {format(new Date(row.getValue("release_date")), "yyyy-MM-dd")}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "artist_id",
-    header: "艺人ID",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        #{row.getValue("artist_id")}
-      </span>
     ),
   },
   {
