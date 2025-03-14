@@ -12,6 +12,13 @@ export const albumsRouter = createTRPCRouter({
       orderBy: {
         release_date: "desc",
       },
+      include: {
+        artists: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }),
 
@@ -23,7 +30,6 @@ export const albumsRouter = createTRPCRouter({
         include: {
           artists: {
             select: {
-              id: true,
               name: true,
             },
           },

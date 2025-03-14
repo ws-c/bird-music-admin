@@ -2,11 +2,14 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
-import { type AlbumColumn } from "@/lib/album_validators";
+import { type SongColumn } from "@/lib/song_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
-export const columns: ColumnDef<AlbumColumn>[] = [
+import { typeOptions } from "@/components/constants/genre";
+import { Badge } from "@/components/ui/badge";
+import { formatTime } from "@/utils/formatTime";
+export const columns: ColumnDef<SongColumn>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -33,54 +36,80 @@ export const columns: ColumnDef<AlbumColumn>[] = [
   },
   {
     accessorKey: "id",
-    header: "专辑ID",
+    header: "歌曲ID",
     cell: ({ row }) => (
       <span className="text-muted-foreground">#{row.getValue("id")}</span>
     ),
   },
   {
-    accessorKey: "cover",
+    accessorKey: "albums.cover",
     header: "封面",
     cell: ({ row }) => (
       <Image
         width={40}
         height={40}
-        src={row.getValue("cover")}
+        src={row.original.albums.cover}
         alt="专辑封面"
         className=" rounded object-cover"
       />
     ),
     enableSorting: false,
   },
+
   {
-    accessorKey: "album_title",
-    header: "专辑标题",
+    accessorKey: "song_title",
+    header: "标题",
     cell: ({ row }) => (
-      <div className="flex max-w-[200px] flex-col gap-1 truncate font-medium">
-        {row.getValue("album_title")}
+      <div className="flex max-w-[300px]  flex-col gap-1 truncate font-medium">
+        {row.getValue("song_title")}
         <span className="text-xs text-muted-foreground">
-          {row.original.artists.name}
+          {row.original.song_artists
+            .map((artist) => artist.artists.name)
+            .join(" / ")}
         </span>
       </div>
     ),
   },
   {
-    accessorKey: "desc",
-    header: "专辑描述",
+    accessorKey: "albums.album_title",
+    header: "专辑标题",
     cell: ({ row }) => (
-      <div className="max-w-[300px] truncate text-sm text-muted-foreground">
-        {row.getValue("desc") || "暂无描述"}
+      <div className="max-w-[200px] truncate text-muted-foreground">
+        {row.original.albums.album_title}
       </div>
     ),
   },
   {
-    accessorKey: "release_date",
-    header: "发行日期",
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap">
-        {format(new Date(row.getValue("release_date")), "yyyy-MM-dd")}
-      </span>
-    ),
+    accessorKey: "duration",
+    header: "时长",
+    cell: ({ row }) => <span>{formatTime(row.getValue("duration"))}</span>,
+  },
+  {
+    accessorKey: "tags",
+    header: "风格类型",
+    cell: ({ row }) => {
+      const tags = row.getValue<number[]>("tags") || [];
+      const getTagLabel = (value: number) =>
+        typeOptions.find((opt) => opt.value === value)?.label || "未知";
+
+      return (
+        <div className="flex max-w-[200px] flex-wrap gap-1">
+          {tags.length === 0 ? (
+            <span className="text-xs text-muted-foreground">无标签</span>
+          ) : (
+            tags.map((tagValue) => (
+              <Badge
+                key={tagValue}
+                variant="outline"
+                className="px-2 py-0.5 text-xs font-medium"
+              >
+                {getTagLabel(tagValue)}
+              </Badge>
+            ))
+          )}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "create_time",

@@ -18,8 +18,8 @@ export const NavItems: NavItem[] = [
   {
     title: "歌曲管理",
     icon: Music,
-    href: "/",
     color: "text-gray-900 dark:text-gray-400",
+    href: "*",
     isChildren: true,
     children: [
       {
@@ -38,7 +38,7 @@ export const NavItems: NavItem[] = [
         title: "单曲管理",
         icon: ListMinus,
         color: "text-gray-900 dark:text-gray-400",
-        href: "/example/example-03",
+        href: "/songs",
       },
     ],
   },
@@ -46,6 +46,6 @@ export const NavItems: NavItem[] = [
     title: "用户管理",
     icon: User,
     color: "text-gray-900 dark:text-gray-400",
-    href: "/example/example-03",
+    href: "/users",
   },
 ];

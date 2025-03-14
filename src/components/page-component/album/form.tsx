@@ -145,19 +145,19 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
         >
-          <div className="flex flex-col gap-6">
+          <div className="mt-8 flex flex-col gap-6">
             {/* 专辑标题 */}
             <FormField
               control={form.control}
               name="album_title"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">专辑标题：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 text-right flex-shrink-0">标题：</FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
-                        placeholder="请输入专辑标题"
+                        placeholder="请输入标题"
                         disabled={loading}
                       />
                     </FormControl>
@@ -173,8 +173,8 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               name="artist_id"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">艺人作者：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 text-right flex-shrink-0">作者：</FormLabel>
                     <Select
                       disabled={loading}
                       onValueChange={(value) => field.onChange(Number(value))}
@@ -182,7 +182,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="选择艺人" />
+                          <SelectValue placeholder="选择作者" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -208,8 +208,8 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               name="release_date"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">发行日期：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 text-right flex-shrink-0">发行日期：</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl className="flex-grow">
@@ -251,8 +251,8 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               name="cover"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">封面图片：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 text-right flex-shrink-0">封面：</FormLabel>
                     <FormControl className="flex-grow">
                       <ImageUploader
                         value={field.value}
@@ -272,15 +272,13 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               name="desc"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-start">
-                    <FormLabel className="flex-shrink-0 pt-2">
-                      专辑描述：
-                    </FormLabel>
+                  <div className="flex items-start gap-2">
+                    <FormLabel className=" w-20 text-right flex-shrink-0 pt-2">描述：</FormLabel>
                     <FormControl className="flex-grow">
                       <Textarea
                         {...field}
                         value={field.value || ""}
-                        placeholder="输入专辑描述（可选）"
+                        placeholder="输入描述（可选）"
                         disabled={loading}
                         rows={8} // 设置默认显示行高度
                         className="resize-y" // 允许垂直调整大小
@@ -292,17 +290,18 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               )}
             />
           </div>
-
+          <Separator />
           <div className="flex justify-end gap-4 pl-4">
             <Button
               disabled={loading}
               type="button"
               variant="outline"
               onClick={() => router.back()}
+              className="rounded-xl"
             >
               取消
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={loading} type="submit" className="rounded-xl">
               {action}
             </Button>
           </div>

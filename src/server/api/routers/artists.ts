@@ -6,7 +6,7 @@ import {
 } from "@/lib/artist_validators";
 
 export const artistsRouter = createTRPCRouter({
-  // 获取所有艺人（按名称排序）
+  // 获取所有艺人（按更新时间排序）
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.artists.findMany({
       orderBy: {

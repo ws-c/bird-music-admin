@@ -85,11 +85,13 @@ model song_artists {
 model songs {
   id               Int                @id @default(autoincrement())
   song_title       String             @db.VarChar(255)
-  duration         Int?
+  duration         Int
   file_path        String             @db.Text
   albums_id        Int
   lyric            String?            @db.VarChar(255)
   tags             Json?
+  create_time      DateTime           @db.DateTime(0)
+  update_time      DateTime           @db.DateTime(0)
   playlist_songs   playlist_songs[]
   song_artists     song_artists[]
   albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")

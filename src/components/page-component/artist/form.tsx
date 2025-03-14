@@ -127,19 +127,19 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
         >
-          <div className="flex flex-col gap-6">
+          <div className="mt-8 flex flex-col gap-6">
             {/* 艺人名称 */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">艺人名称：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" flex-shrink-0">名称：</FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
-                        placeholder="请输入艺人名称"
+                        placeholder="请输入名称"
                         disabled={loading}
                       />
                     </FormControl>
@@ -155,8 +155,8 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
               name="image_url"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center ">
-                    <FormLabel className=" flex-shrink-0">艺人图片：</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" flex-shrink-0">图片：</FormLabel>
                     <FormControl className="flex-grow">
                       <ImageUploader
                         value={field.value}
@@ -176,15 +176,15 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
               name="biography"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-start">
+                  <div className="flex items-start gap-2">
                     <FormLabel className="flex-shrink-0 pt-2">
-                      艺人简介：
+                      简介：
                     </FormLabel>
                     <FormControl className="flex-grow">
                       <Textarea
                         {...field}
                         value={field.value || ""}
-                        placeholder="输入艺人简介（可选）"
+                        placeholder="输入简介（可选）"
                         disabled={loading}
                         rows={8} // 设置默认显示行高度
                         className="resize-y" // 允许垂直调整大小
@@ -196,17 +196,18 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
               )}
             />
           </div>
-
+          <Separator />
           <div className="flex justify-end gap-4 pl-4">
             <Button
               disabled={loading}
               type="button"
               variant="outline"
               onClick={() => router.back()}
+              className="rounded-xl"
             >
               取消
             </Button>
-            <Button disabled={loading} type="submit">
+            <Button disabled={loading} type="submit" className="rounded-xl">
               {action}
             </Button>
           </div>
