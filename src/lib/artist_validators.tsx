@@ -27,6 +27,10 @@ export type ArtistColumn = z.infer<typeof ArtistBaseSchema> & {
   id: number;
   update_time: Date;
   create_time: Date;
+  _count?: {
+    albums: number;
+    song_artists: number;
+  };
 };
 
 // 艺人新建表单

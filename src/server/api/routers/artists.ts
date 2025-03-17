@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedProcedure,
+} from "@/server/api/trpc";
 import {
   ArtistBaseSchema,
   updateArtistFormSchema,
@@ -11,6 +15,20 @@ export const artistsRouter = createTRPCRouter({
     return await ctx.prisma.artists.findMany({
       orderBy: {
         update_time: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        biography: true,
+        image_url: true,
+        create_time: true,
+        update_time: true,
+        _count: {
+          select: {
+            albums: true, // 专辑数量
+            song_artists: true, // 参与的歌曲数量
+          },
+        },
       },
     });
   }),

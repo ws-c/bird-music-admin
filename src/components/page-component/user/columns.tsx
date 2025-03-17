@@ -2,11 +2,11 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
-import { type ArtistColumn } from "@/lib/artist_validators";
+import { type UserColumn } from "@/lib/user_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
-export const columns: ColumnDef<ArtistColumn>[] = [
+export const columns: ColumnDef<UserColumn>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -33,58 +33,58 @@ export const columns: ColumnDef<ArtistColumn>[] = [
   },
   {
     accessorKey: "id",
-    header: "艺人ID",
+    header: "用户ID",
     cell: ({ row }) => (
       <span className="text-muted-foreground">#{row.getValue("id")}</span>
     ),
   },
   {
-    accessorKey: "image_url",
-    header: "艺人图片",
+    accessorKey: "cover",
+    header: "头像",
     cell: ({ row }) => (
       <Image
         width={40}
         height={40}
-        src={row.getValue("image_url")}
-        alt="艺人图片"
+        src={row.getValue("cover") || "https://temp.im/40x40"}
+        alt="头像"
         className=" rounded object-cover"
       />
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "name",
-    header: "艺人名称",
+    accessorKey: "username",
+    header: "用户名",
     cell: ({ row }) => (
-      <div className="max-w-[200px] truncate font-medium">
-        {row.getValue("name")}
+      <div className="flex max-w-[200px] truncate font-medium">
+        {row.getValue("username")}
       </div>
     ),
   },
   {
-    accessorKey: "biography",
-    header: "艺人简介",
-    cell: ({ row }) => (
-      <div className="max-w-[300px] truncate text-sm text-muted-foreground">
-        {row.getValue("biography") || "暂无简介"}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "albums_count",
-    header: "专辑数量",
+    accessorKey: "user_likes_songs",
+    header: "喜欢歌曲数量",
     cell: ({ row }) => (
       <span className="text-muted-foreground">
-        {row.original._count?.albums}
+        {row.original._count?.user_likes_songs}
       </span>
     ),
   },
   {
-    accessorKey: "songs_count",
-    header: "参与歌曲数量",
+    accessorKey: "playlist_create_count",
+    header: "创建歌单数量",
     cell: ({ row }) => (
       <span className="text-muted-foreground">
-        {row.original._count?.song_artists}
+        {row.original._count?.playlist}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "playlist_collect_count",
+    header: "收藏歌单数量",
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">
+        {row.original._count?.playlist_collect}
       </span>
     ),
   },

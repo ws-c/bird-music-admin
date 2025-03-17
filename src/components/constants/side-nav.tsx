@@ -5,6 +5,7 @@ import {
   Speaker,
   User,
   Music,
+  ListMusic,
 } from "lucide-react";
 import { type NavItem } from "@/types";
 
@@ -47,5 +48,11 @@ export const NavItems: NavItem[] = [
     icon: User,
     color: "text-gray-900 dark:text-gray-400",
     href: "/users",
+  },
+  {
+    title: "歌单管理",
+    icon: ListMusic,
+    color: "text-gray-900 dark:text-gray-400",
+    href: "/playlists",
   },
 ];

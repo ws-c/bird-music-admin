@@ -1,28 +1,20 @@
 import { z } from "zod";
-import { updateAlbumFormSchema, AlbumBaseSchema } from "@/lib/album_validators";
+
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import {
+  PlaylistBaseSchema,
+  updatePlaylistFormSchema,
+} from "@/lib/playlist_validators";
 
-export const albumsRouter = createTRPCRouter({
+export const playlistsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.albums.findMany({
+    return await ctx.prisma.playlist.findMany({
       orderBy: {
-        release_date: "desc",
-      },
-      include: {
-        _count: {
-          select: {
-            songs: true,
-          },
-        },
-        artists: {
-          select: {
-            name: true,
-          },
-        },
+        update_time: "desc",
       },
     });
   }),
@@ -30,24 +22,27 @@ export const albumsRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.albums.findUnique({
+      return await ctx.prisma.playlist.findUnique({
         where: { id: input },
-        include: {
-          artists: {
-            select: {
-              name: true,
-            },
-          },
-        },
       });
     }),
 
   create: protectedProcedure
-    .input(AlbumBaseSchema)
+    .input(PlaylistBaseSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.albums.create({
+      const existingUser = await ctx.prisma.users.findUnique({
+        where: {
+          username: input.author,
+        },
+        select: {
+          id: true,
+        },
+      });
+      if (!existingUser) return new Error("用户不存在");
+      return await ctx.prisma.playlist.create({
         data: {
           ...input,
+          user_id: existingUser.id,
           update_time: new Date(),
           create_time: new Date(),
         },
@@ -55,10 +50,11 @@ export const albumsRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(updateAlbumFormSchema)
+    .input(updatePlaylistFormSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      return await ctx.prisma.albums.update({
+
+      return await ctx.prisma.playlist.update({
         where: { id },
         data: {
           ...data,
@@ -70,12 +66,7 @@ export const albumsRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.number().int())
     .mutation(async ({ ctx, input }) => {
-      // 先删除关联歌曲
-      await ctx.prisma.songs.deleteMany({
-        where: { albums_id: input },
-      });
-
-      return await ctx.prisma.albums.delete({
+      return await ctx.prisma.playlist.delete({
         where: { id: input },
       });
     }),

@@ -83,6 +83,15 @@ export const columns: ColumnDef<AlbumColumn>[] = [
     ),
   },
   {
+    accessorKey: "_count",
+    header: "歌曲数量",
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">
+        {row.original._count?.songs}
+      </span>
+    ),
+  },
+  {
     accessorKey: "create_time",
     header: "创建时间",
     cell: ({ row }) => (

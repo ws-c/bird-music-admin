@@ -21,75 +21,73 @@ import {
 import { Input } from "@/components/ui/input";
 import { AlertModal } from "@/components/common/alert-modal";
 import {
-  ArtistBaseSchema,
-  type ArtistColumn,
-  type ArtistFormValues,
-} from "@/lib/artist_validators";
-import { Textarea } from "@/components/ui/textarea";
+  type UserFormValues,
+  type UserColumn,
+  UserBaseSchema,
+  updateUserFormSchema,
+} from "@/lib/user_validators";
 import { ImageUploader } from "@/components/common/img-uploader";
 
-interface ArtistFormProps {
-  artists: ArtistColumn | null;
+interface UserFormProps {
+  users: UserColumn | null;
 }
 
-export const ArtistForm = ({ artists }: ArtistFormProps) => {
+export const UserForm = ({ users }: UserFormProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const title = artists ? "编辑艺人" : "新建艺人";
-  const description = artists ? "修改艺人信息" : "添加新艺人";
-  const toastMessage = artists ? "艺人更新成功" : "艺人创建成功";
-  const action = artists ? "保存" : "创建";
+  const title = users ? "编辑用户" : "新建用户";
+  const description = users ? "修改用户信息" : "添加新用户";
+  const toastMessage = users ? "用户更新成功" : "用户创建成功";
+  const action = users ? "保存" : "创建";
 
-  const form = useForm<ArtistFormValues>({
-    resolver: zodResolver(ArtistBaseSchema),
-    defaultValues: artists ?? undefined,
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(users ? updateUserFormSchema : UserBaseSchema),
+    defaultValues: users ?? undefined,
   });
 
-  const { mutate: createArtist } = api.artists.create.useMutation({
+  const { mutate: createUser } = api.users.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
       toast.success(toastMessage);
-      router.push("/artists");
+      router.push("/users");
     },
   });
 
-  const { mutate: updateArtist } = api.artists.update.useMutation({
+  const { mutate: updateUser } = api.users.update.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
       toast.success(toastMessage);
-      router.push("/artists");
+      router.push("/users");
     },
   });
 
-  const { mutate: deleteArtist } = api.artists.delete.useMutation({
+  const { mutate: deleteUser } = api.users.delete.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
-      toast.success("艺人删除成功");
-      router.push("/artists");
+      toast.success("用户删除成功");
+      router.push("/users");
     },
   });
 
-  const onSubmit = (values: ArtistFormValues) => {
+  const onSubmit = (values: UserFormValues) => {
     try {
       setLoading(true);
-      if (artists) {
-        updateArtist({
+      if (users) {
+        updateUser({
           ...values,
-          id: artists.id,
-          biography: values.biography ?? undefined,
+          id: users.id,
         });
       } else {
-        createArtist({
+        createUser({
           ...values,
-          biography: values.biography ?? undefined,
         });
       }
     } catch (error) {
@@ -100,8 +98,8 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
   };
 
   const onDelete = () => {
-    if (artists?.id) {
-      deleteArtist(artists.id);
+    if (users?.id) {
+      deleteUser(users.id);
     }
   };
 
@@ -109,7 +107,7 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
     <>
       <div className="mx-auto flex w-1/2 min-w-96 items-center justify-between">
         <Heading title={title} description={description} />
-        {artists && (
+        {users && (
           <Button
             disabled={loading}
             variant="destructive"
@@ -128,18 +126,20 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
           className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
         >
           <div className="mt-8 flex flex-col gap-6">
-            {/* 艺人名称 */}
+            {/* 用户名 */}
             <FormField
               control={form.control}
-              name="name"
+              name="username"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" flex-shrink-0">名称：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      用户名：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
-                        placeholder="请输入名称"
+                        placeholder="请输入用户名"
                         disabled={loading}
                       />
                     </FormControl>
@@ -149,45 +149,44 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
               )}
             />
 
-            {/* 封面 */}
+            {/* 密码 */}
             <FormField
               control={form.control}
-              name="image_url"
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" flex-shrink-0">图片：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      密码：
+                    </FormLabel>
+                    <FormControl className="flex-grow">
+                      <Input
+                        {...field}
+                        placeholder="请输入密码, 编辑时留空则不修改密码"
+                        disabled={loading}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-28" />
+                </FormItem>
+              )}
+            />
+
+            {/* 头像 */}
+            <FormField
+              control={form.control}
+              name="cover"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      头像：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <ImageUploader
                         value={field.value}
                         onChange={field.onChange}
-                        catalogue="artists"
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage className="ml-28" />
-                </FormItem>
-              )}
-            />
-
-            {/* 艺人简介 */}
-            <FormField
-              control={form.control}
-              name="biography"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-start gap-2">
-                    <FormLabel className="flex-shrink-0 pt-2">
-                      简介：
-                    </FormLabel>
-                    <FormControl className="flex-grow">
-                      <Textarea
-                        {...field}
-                        value={field.value || ""}
-                        placeholder="输入简介（可选）"
-                        disabled={loading}
-                        rows={6} // 设置默认显示行高度
-                        className="resize-y" // 允许垂直调整大小
+                        catalogue="avatar"
                       />
                     </FormControl>
                   </div>
@@ -216,7 +215,7 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
 
       <AlertModal
         title="确认删除？"
-        description="此操作将永久删除该专辑及其关联数据"
+        description="此操作将永久删除该用户"
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}

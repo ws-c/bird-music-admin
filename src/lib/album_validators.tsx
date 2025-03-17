@@ -39,13 +39,13 @@ export const AlbumBaseSchema = z.object({
 });
 
 // 专辑数据类型（表格）
-export type AlbumColumn = Omit<
-  z.infer<typeof AlbumBaseSchema>,
-  "artist_id"
-> & {
+export type AlbumColumn = Omit<z.infer<typeof AlbumBaseSchema>, "artist_id"> & {
   id: number;
   update_time: Date;
   create_time: Date;
+  _count?: {
+    songs: number;
+  };
   artists: {
     name: string;
   };

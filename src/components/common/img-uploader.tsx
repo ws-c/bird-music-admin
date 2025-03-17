@@ -15,7 +15,7 @@ import {
 import { put } from "@/utils/oss";
 
 export interface ImageUploaderProps {
-  value?: string;
+  value?: string | null;
   onChange: (url: string) => void;
   className?: string;
   catalogue: string;

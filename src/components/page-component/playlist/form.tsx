@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+
 import { api } from "@/utils/api";
 import toast from "react-hot-toast";
 import { Heading } from "@/components/common/heading";
@@ -21,91 +20,84 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { AlertModal } from "@/components/common/alert-modal";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  type AlbumFormValues,
-  type AlbumColumn,
-  AlbumBaseSchema,
-} from "@/lib/album_validators";
-import type { ArtistColumn } from "@/lib/artist_validators";
+  type PlaylistFormValues,
+  type PlaylistColumn,
+  PlaylistBaseSchema,
+} from "@/lib/playlist_validators";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/common/img-uploader";
+import { MultiSelect } from "@/components/common/multi-select";
+import { typeOptions } from "@/components/constants/genre";
+import { Checkbox } from "@/components/ui/checkbox";
 
-interface AlbumFormProps {
-  albums: AlbumColumn | null;
-  artists: ArtistColumn[];
+interface PlaylistFormProps {
+  playlists: PlaylistColumn | null;
 }
 
-export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
+export const PlaylistForm = ({ playlists }: PlaylistFormProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const title = albums ? "编辑专辑" : "新建专辑";
-  const description = albums ? "修改专辑信息" : "添加新专辑";
-  const toastMessage = albums ? "专辑更新成功" : "专辑创建成功";
-  const action = albums ? "保存" : "创建";
+  const title = playlists ? "编辑歌单" : "新建歌单";
+  const description = playlists ? "修改歌单信息" : "添加新歌单";
+  const toastMessage = playlists ? "歌单更新成功" : "歌单创建成功";
+  const action = playlists ? "保存" : "创建";
 
-  const form = useForm<AlbumFormValues>({
-    resolver: zodResolver(AlbumBaseSchema),
-    defaultValues: albums ?? undefined,
+  const form = useForm<PlaylistFormValues>({
+    resolver: zodResolver(PlaylistBaseSchema),
+    defaultValues: playlists
+      ? {
+          ...playlists,
+
+          tags: playlists.tags as number[],
+        }
+      : undefined,
   });
 
-  const { mutate: createAlbum } = api.albums.create.useMutation({
+  const { mutate: createPlaylist } = api.playlists.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
       toast.success(toastMessage);
-      router.push("/albums");
+      router.push("/playlists");
     },
   });
 
-  const { mutate: updateAlbum } = api.albums.update.useMutation({
+  const { mutate: updatePlaylist } = api.playlists.update.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
       toast.success(toastMessage);
-      router.push("/albums");
+      router.push("/playlists");
     },
   });
 
-  const { mutate: deleteAlbum } = api.albums.delete.useMutation({
+  const { mutate: deletePlaylist } = api.playlists.delete.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
     onSuccess: () => {
-      toast.success("专辑删除成功");
-      router.push("/albums");
+      toast.success("歌单删除成功");
+      router.push("/playlists");
     },
   });
 
-  const onSubmit = (values: AlbumFormValues) => {
+  const onSubmit = (values: PlaylistFormValues) => {
     try {
       setLoading(true);
-      if (albums) {
-        updateAlbum({
+      if (playlists) {
+        updatePlaylist({
           ...values,
-          id: albums.id,
+          id: playlists.id,
           desc: values.desc ?? undefined,
         });
       } else {
-        createAlbum({
+        createPlaylist({
           ...values,
           desc: values.desc ?? undefined,
         });
@@ -118,8 +110,8 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
   };
 
   const onDelete = () => {
-    if (albums?.id) {
-      deleteAlbum(albums.id);
+    if (playlists?.id) {
+      deletePlaylist(playlists.id);
     }
   };
 
@@ -127,7 +119,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
     <>
       <div className="mx-auto flex w-1/2 min-w-96 items-center justify-between">
         <Heading title={title} description={description} />
-        {albums && (
+        {playlists && (
           <Button
             disabled={loading}
             variant="destructive"
@@ -146,14 +138,16 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
           className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
         >
           <div className="mt-8 flex flex-col gap-6">
-            {/* 专辑标题 */}
+            {/* 歌单标题 */}
             <FormField
               control={form.control}
-              name="album_title"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">标题：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      标题：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
@@ -167,97 +161,21 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               )}
             />
 
-            {/* 艺人作者 */}
-            <FormField
-              control={form.control}
-              name="artist_id"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">作者：</FormLabel>
-                    <Select
-                      disabled={loading}
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      value={field.value?.toString() ?? ""}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="选择作者" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {artists.map((artist) => (
-                          <SelectItem
-                            key={artist.id}
-                            value={artist.id.toString()}
-                          >
-                            {artist.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <FormMessage className="ml-28" />
-                </FormItem>
-              )}
-            />
-
-            {/* 发行日期 */}
-            <FormField
-              control={form.control}
-              name="release_date"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">发行日期：</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl className="flex-grow">
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "yyyy-MM-dd")
-                            ) : (
-                              <span>选择日期</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value ?? undefined}
-                          onSelect={field.onChange}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <FormMessage className="ml-28" />
-                </FormItem>
-              )}
-            />
-
             {/* 封面 */}
             <FormField
               control={form.control}
-              name="cover"
+              name="img"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">封面：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      封面：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <ImageUploader
                         value={field.value}
                         onChange={field.onChange}
-                        catalogue="album_cover"
+                        catalogue="playlist"
                       />
                     </FormControl>
                   </div>
@@ -265,20 +183,43 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
                 </FormItem>
               )}
             />
-
-            {/* 专辑描述 */}
+            {/* 歌单作者 */}
+            <FormField
+              control={form.control}
+              name="author"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      作者：
+                    </FormLabel>
+                    <FormControl className="flex-grow">
+                      <Input
+                        {...field}
+                        placeholder="请输入作者的用户名"
+                        disabled={loading}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-28" />
+                </FormItem>
+              )}
+            />
+            {/* 歌单描述 */}
             <FormField
               control={form.control}
               name="desc"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-start gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0 pt-2">描述：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 pt-2 text-right">
+                      描述：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <Textarea
                         {...field}
                         value={field.value || ""}
-                        placeholder="输入描述（可选）"
+                        placeholder="输入歌单描述（可选）"
                         disabled={loading}
                         rows={6} // 设置默认显示行高度
                         className="resize-y" // 允许垂直调整大小
@@ -289,6 +230,62 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
                 </FormItem>
               )}
             />
+            {/* 标签 */}
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <FormLabel className=" w-20 flex-shrink-0 text-right">
+                        标签：
+                      </FormLabel>
+                      <MultiSelect
+                        options={typeOptions.map((tag) => ({
+                          value: tag.value.toString(),
+                          label: tag.label,
+                        }))}
+                        onValueChange={(values) =>
+                          // 转换为数字数组
+                          field.onChange(values.map((v) => parseInt(v)))
+                        }
+                        defaultValue={field.value?.map((i) => i.toString())}
+                        placeholder="选择标签"
+                        variant="secondary"
+                        animation={1}
+                        maxCount={3}
+                      />
+                    </div>
+                    <FormMessage className="ml-12" />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* 是否私密 */}
+            <FormField
+              control={form.control}
+              name="isPrivate"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className="w-20 flex-shrink-0  text-right">
+                      是否私密：
+                    </FormLabel>
+                    <FormControl>
+                      <Checkbox
+                        id="isPrivate"
+                        checked={field.value === "1"}
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked ? "1" : "0")
+                        }
+                        disabled={loading}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            ></FormField>
           </div>
           <Separator />
           <div className="flex justify-end gap-4 pl-4">

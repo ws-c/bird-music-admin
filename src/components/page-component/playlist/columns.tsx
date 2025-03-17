@@ -2,11 +2,13 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
-import { type ArtistColumn } from "@/lib/artist_validators";
+import { type PlaylistColumn } from "@/lib/playlist_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
-export const columns: ColumnDef<ArtistColumn>[] = [
+import { typeOptions } from "@/components/constants/genre";
+import { Badge } from "@/components/ui/badge";
+export const columns: ColumnDef<PlaylistColumn>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -33,20 +35,20 @@ export const columns: ColumnDef<ArtistColumn>[] = [
   },
   {
     accessorKey: "id",
-    header: "艺人ID",
+    header: "歌单ID",
     cell: ({ row }) => (
       <span className="text-muted-foreground">#{row.getValue("id")}</span>
     ),
   },
   {
-    accessorKey: "image_url",
-    header: "艺人图片",
+    accessorKey: "img",
+    header: "封面",
     cell: ({ row }) => (
       <Image
         width={40}
         height={40}
-        src={row.getValue("image_url")}
-        alt="艺人图片"
+        src={row.getValue("img") || "https://temp.im/40x40"}
+        alt="歌单封面"
         className=" rounded object-cover"
       />
     ),
@@ -54,38 +56,71 @@ export const columns: ColumnDef<ArtistColumn>[] = [
   },
   {
     accessorKey: "name",
-    header: "艺人名称",
+    header: "歌单标题",
     cell: ({ row }) => (
-      <div className="max-w-[200px] truncate font-medium">
+      <div className="flex max-w-[200px] flex-col gap-1 truncate font-medium">
         {row.getValue("name")}
+        <span className="text-xs text-muted-foreground">
+          {row.original.author}
+        </span>
       </div>
     ),
   },
+
   {
-    accessorKey: "biography",
-    header: "艺人简介",
+    accessorKey: "desc",
+    header: "歌单描述",
     cell: ({ row }) => (
       <div className="max-w-[300px] truncate text-sm text-muted-foreground">
-        {row.getValue("biography") || "暂无简介"}
+        {row.getValue("desc") || "暂无描述"}
       </div>
     ),
   },
   {
-    accessorKey: "albums_count",
-    header: "专辑数量",
+    accessorKey: "tags",
+    header: "风格类型",
+    cell: ({ row }) => {
+      const tags = row.getValue<number[]>("tags") || [];
+      const getTagLabel = (value: number) =>
+        typeOptions.find((opt) => opt.value === value)?.label || "未知";
+
+      return (
+        <div className="flex max-w-[200px] flex-wrap gap-1">
+          {tags.length === 0 ? (
+            <span className="text-xs text-muted-foreground">无标签</span>
+          ) : (
+            tags.map((tagValue) => (
+              <Badge
+                key={tagValue}
+                variant="outline"
+                className="px-2 py-0.5 text-xs font-medium"
+              >
+                {getTagLabel(tagValue)}
+              </Badge>
+            ))
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "isPrivate",
+    header: "是否私密",
     cell: ({ row }) => (
       <span className="text-muted-foreground">
-        {row.original._count?.albums}
+        {row.getValue("isPrivate") === "1" ? (
+          <Badge className="bg-green-500 text-white">是</Badge>
+        ) : (
+          <Badge className="bg-red-500 text-white">否</Badge>
+        )}
       </span>
     ),
   },
   {
-    accessorKey: "songs_count",
-    header: "参与歌曲数量",
+    accessorKey: "user_id",
+    header: "作者id",
     cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original._count?.song_artists}
-      </span>
+      <span className="text-muted-foreground">#{row.getValue("user_id")}</span>
     ),
   },
   {

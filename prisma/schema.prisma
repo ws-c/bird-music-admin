@@ -37,16 +37,19 @@ model playlist {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(255)
   author           String             @db.VarChar(255)
-  createTime       DateTime?          @db.Date
+  create_time      DateTime           @db.Date
   desc             String?            @db.VarChar(255)
   tags             Json?
   isPrivate        String?            @db.VarChar(255)
   img              String?            @db.VarChar(255)
   user_id          Int
+  update_time      DateTime           @db.DateTime(0)
+  users            users              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk")
   playlist_collect playlist_collect[]
   playlist_songs   playlist_songs[]
 
   @@index([author], map: "name")
+  @@index([user_id], map: "fk")
 }
 
 model playlist_collect {
@@ -116,66 +119,65 @@ model users {
   id               Int                @id @default(autoincrement())
   username         String             @unique(map: "unique_username") @db.VarChar(255)
   password         String             @db.VarChar(255)
-  createdAt        DateTime?          @db.Date
+  create_time      DateTime           @db.DateTime(0)
   cover            String?            @db.VarChar(255)
+  update_time      DateTime           @db.Date
+  playlist         playlist[]
   playlist_collect playlist_collect[]
   user_likes_songs user_likes_songs[]
 }
 
-model User {
-  id            String          @id @default(cuid())
-  name          String?
-  username      String?         @unique
-  email         String?         @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
- 
-model Account {
-  id                       String  @id @default(cuid())
-  userId                   String  @unique
+model account {
+  id                       String   @id
+  userId                   String   @unique(map: "Account_userId_key")
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? @db.Text
-  access_token             String? @db.Text
+  refresh_token            String?  @db.Text
+  access_token             String?  @db.Text
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.Text
+  id_token                 String?  @db.Text
   session_state            String?
   refresh_token_expires_in Int?
-  user                     User?   @relation(fields: [userId], references: [id])
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  @@unique([provider, providerAccountId])
-  @@index([userId])
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime
+  user                     user     @relation(fields: [userId], references: [id], map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_idx")
 }
- 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+
+model session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  @@index([userId])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  user         user     @relation(fields: [userId], references: [id], map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_idx")
 }
- 
-model VerificationToken {
+
+model user {
+  id            String    @id
+  name          String?
+  username      String?   @unique(map: "User_username_key")
+  email         String?   @unique(map: "User_email_key")
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  account       account?
+  session       session[]
+}
+
+model verificationtoken {
   identifier String
   token      String
   expires    DateTime
- 
-  @@unique([identifier, token])
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
 }
