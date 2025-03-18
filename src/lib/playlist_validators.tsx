@@ -45,6 +45,9 @@ export type PlaylistColumn = Omit<
   update_time: Date;
   create_time: Date;
   tags?: number[] | JsonValue;
+  _count?: {
+    playlist_songs: number;
+  };
 };
 
 // 歌单新建表单

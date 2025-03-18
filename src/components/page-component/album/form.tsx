@@ -125,7 +125,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
 
   return (
     <>
-      <div className="mx-auto flex w-1/2 min-w-96 items-center justify-between">
+      <div className="mx-auto flex w-2/5 min-w-96 items-center justify-between">
         <Heading title={title} description={description} />
         {albums && (
           <Button
@@ -143,7 +143,7 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mx-auto w-1/2 min-w-96 space-y-8 text-center"
+          className="mx-auto w-2/5 min-w-96 space-y-8 text-center"
         >
           <div className="mt-8 flex flex-col gap-6">
             {/* 专辑标题 */}

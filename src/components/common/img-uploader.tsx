@@ -31,8 +31,8 @@ export const ImageUploader = ({
   const [tempSrc, setTempSrc] = useState(""); // 用于对话框中的临时图片
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
-    width: 240,
-    height: 240,
+    width: 150,
+    height: 150,
     x: 0,
     y: 0,
   });
@@ -134,13 +134,13 @@ export const ImageUploader = ({
       />
 
       {/* 图片展示 */}
-      <div className="group relative h-60 w-60 rounded-lg border-2 border-dashed border-gray-200 p-2">
+      <div className="group relative h-40 w-40 rounded-lg border-2 border-dashed border-gray-200 p-2">
         {value && (
           <div className="relative">
             <Image
               src={value}
-              width={240}
-              height={240}
+              width={150}
+              height={150}
               alt="已上传图片"
               className="mx-auto object-contain transition-all duration-100 group-hover:brightness-90"
             />
@@ -179,8 +179,8 @@ export const ImageUploader = ({
               <ReactCrop
                 crop={crop}
                 onChange={setCrop}
-                minWidth={200}
-                minHeight={200}
+                minWidth={150}
+                minHeight={150}
                 maxWidth={600}
                 maxHeight={600}
                 aspect={1 / 1}

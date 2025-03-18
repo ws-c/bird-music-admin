@@ -134,4 +134,14 @@ export const columns: ColumnDef<SongColumn>[] = [
     enableSorting: false,
     cell: ({ row }) => <CellAction data={row.original} />,
   },
+  // 隐藏的搜索字段
+  {
+    accessorKey: "artists_search",
+    header: "", // 隐藏表头
+    cell: () => null, // 隐藏单元格
+    enableSorting: false,
+    enableHiding: true,
+    // 将多个艺人名称合并为可搜索的字符串
+    accessorFn: (row) => row.song_artists.map((a) => a.artists.name).join(" "),
+  },
 ];

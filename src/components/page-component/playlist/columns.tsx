@@ -109,20 +109,29 @@ export const columns: ColumnDef<PlaylistColumn>[] = [
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.getValue("isPrivate") === "1" ? (
-          <Badge className="bg-green-500 text-white">是</Badge>
+          <Badge className="bg-red-500 text-white">是</Badge>
         ) : (
-          <Badge className="bg-red-500 text-white">否</Badge>
+          <Badge className="bg-green-500 text-white">否</Badge>
         )}
       </span>
     ),
   },
   {
-    accessorKey: "user_id",
-    header: "作者id",
+    accessorKey: "playlist_songs",
+    header: "歌曲数量",
     cell: ({ row }) => (
-      <span className="text-muted-foreground">#{row.getValue("user_id")}</span>
+      <span className="text-muted-foreground">
+        {row.original._count?.playlist_songs}
+      </span>
     ),
   },
+  // {
+  //   accessorKey: "user_id",
+  //   header: "作者id",
+  //   cell: ({ row }) => (
+  //     <span className="text-muted-foreground">#{row.getValue("user_id")}</span>
+  //   ),
+  // },
   {
     accessorKey: "create_time",
     header: "创建时间",

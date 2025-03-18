@@ -7,25 +7,27 @@ import {
   CardDescription,
   Card,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { CalendarDateRangePicker } from "@/components/dashboard/date-range-picker";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Overview } from "@/components/dashboard/overview";
-import { RecentSales } from "@/components/dashboard/recent-sales";
-
+import { Album, ListMusic, Music, Speaker } from "lucide-react";
+import { PlayCount } from "@/components/dashboard/play-count";
+import { api } from "@/utils/api";
+import { type TotalStats } from "@/server/api/routers/overview";
 const Home = () => {
+  const { data } = api.overview.getTotalStats.useQuery<TotalStats>();
+  console.log(data);
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <div className="flex items-center space-x-2">
+          <h2 className="text-3xl font-bold tracking-tight">仪表盘</h2>
+          {/* <div className="flex items-center space-x-2">
             <CalendarDateRangePicker />
             <Button size="sm">Download</Button>
-          </div>
+          </div> */}
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
+          {/* <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
               Analytics
@@ -36,107 +38,66 @@ const Home = () => {
             <TabsTrigger value="notifications" disabled>
               Notifications
             </TabsTrigger>
-          </TabsList>
+          </TabsList> */}
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Revenue
-                  </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
+                  <CardTitle className="text-2xl">歌曲总数</CardTitle>
+                  <Music />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
+                  <div className="text-2xl font-bold">{data?.songs.total}</div>
                   <p className="text-xs text-muted-foreground">
-                    +20.1% from last month
+                    {data?.songs.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
+
+              {/* 专辑统计 */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Subscriptions
-                  </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
+                  <CardTitle className="text-2xl">专辑总数</CardTitle>
+                  <Album />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+2350</div>
+                  <div className="text-2xl font-bold ">
+                    {data?.albums.total}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    +180.1% from last month
+                    {data?.albums.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
+
+              {/* 艺人统计 */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <rect width="20" height="14" x="2" y="5" rx="2" />
-                    <path d="M2 10h20" />
-                  </svg>
+                  <CardTitle className="text-2xl">艺人总数</CardTitle>
+                  <Speaker />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+12,234</div>
+                  <div className="text-2xl font-bold">
+                    {data?.artists.total}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    +19% from last month
+                    {data?.artists.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
+
+              {/* 歌单统计 */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Active Now
-                  </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
+                  <CardTitle className="text-2xl">歌单总数</CardTitle>
+                  <ListMusic />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+573</div>
+                  <div className="text-2xl font-bold">
+                    {data?.playlists.total}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    +201 since last hour
+                    {data?.playlists.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
@@ -144,21 +105,23 @@ const Home = () => {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
               <Card className="col-span-4">
                 <CardHeader>
-                  <CardTitle>Overview</CardTitle>
+                  <CardTitle className="text-2xl">用户量</CardTitle>
+                  <CardDescription>
+                    总计有
+                    {data?.users.total}位用户
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="pl-2">
-                  <Overview />
+                  <Overview data={data?.users.monthlyGrowth} />
                 </CardContent>
               </Card>
               <Card className="col-span-3">
                 <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
-                  <CardDescription>
-                    You made 265 sales this month.
-                  </CardDescription>
+                  <CardTitle className="text-2xl">播放量</CardTitle>
+                  <CardDescription>总计播放了12000首歌曲</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <RecentSales />
+                  <PlayCount />
                 </CardContent>
               </Card>
             </div>

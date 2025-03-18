@@ -13,6 +13,13 @@ import {
 export const playlistsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.playlist.findMany({
+      include: {
+        _count: {
+          select: {
+            playlist_songs: true,
+          },
+        },
+      },
       orderBy: {
         update_time: "desc",
       },

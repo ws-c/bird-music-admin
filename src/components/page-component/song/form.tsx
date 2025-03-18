@@ -195,7 +195,7 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
   };
   return (
     <>
-      <div className="mx-auto flex w-1/2 min-w-96 items-center justify-between ">
+      <div className="mx-auto flex w-2/5 min-w-96 items-center justify-between ">
         <Heading title={title} description={description} />
         {songs && (
           <Button
@@ -213,21 +213,21 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mx-auto w-1/2 min-w-96 space-y-8 "
+          className="mx-auto w-2/5 min-w-96 space-y-8 "
         >
           <div className="mt-8 flex flex-col gap-6">
-            {/* 标题 */}
+            {/* 歌名 */}
             <FormField
               control={form.control}
               name="song_title"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" flex-shrink-0">标题：</FormLabel>
+                    <FormLabel className=" flex-shrink-0">歌名：</FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
-                        placeholder="请输入标题"
+                        placeholder="请输入歌名"
                         disabled={loading}
                       />
                     </FormControl>
