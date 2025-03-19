@@ -9,31 +9,9 @@ import Image from "next/image";
 import { typeOptions } from "@/components/constants/genre";
 import { Badge } from "@/components/ui/badge";
 import { formatTime } from "@/utils/formatTime";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 export const columns: ColumnDef<SongColumn>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "id",
     header: "歌曲ID",
@@ -113,7 +91,15 @@ export const columns: ColumnDef<SongColumn>[] = [
   },
   {
     accessorKey: "create_time",
-    header: "创建时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>创建时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("create_time")), "yyyy-MM-dd HH:mm:ss")}
@@ -122,7 +108,15 @@ export const columns: ColumnDef<SongColumn>[] = [
   },
   {
     accessorKey: "update_time",
-    header: "更新时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>更新时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("update_time")), "yyyy-MM-dd HH:mm:ss")}

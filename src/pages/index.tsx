@@ -13,8 +13,13 @@ import { Album, ListMusic, Music, Speaker } from "lucide-react";
 import { PlayCount } from "@/components/dashboard/play-count";
 import { api } from "@/utils/api";
 import { type TotalStats } from "@/server/api/routers/overview";
+import { Loading } from "@/components/common/loading";
 const Home = () => {
-  const { data } = api.overview.getTotalStats.useQuery<TotalStats>();
+  const { data, isLoading, error } = api.overview.getTotalStats.useQuery<
+    TotalStats
+  >();
+  if (isLoading) return <Loading />;
+  if (error) return <div>Error: {error.message}</div>;
   console.log(data);
   return (
     <div className="flex h-full flex-col">
@@ -47,9 +52,9 @@ const Home = () => {
                   <Music />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{data?.songs.total}</div>
+                  <div className="text-2xl font-bold">{data.songs.total}</div>
                   <p className="text-xs text-muted-foreground">
-                    {data?.songs.lastMonthChange.toFixed(1)}% 较上月
+                    {data.songs.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
@@ -62,10 +67,10 @@ const Home = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold ">
-                    {data?.albums.total}
+                    {data.albums.total}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {data?.albums.lastMonthChange.toFixed(1)}% 较上月
+                    {data.albums.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
@@ -78,10 +83,10 @@ const Home = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {data?.artists.total}
+                    {data.artists.total}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {data?.artists.lastMonthChange.toFixed(1)}% 较上月
+                    {data.artists.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
@@ -94,10 +99,10 @@ const Home = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {data?.playlists.total}
+                    {data.playlists.total}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {data?.playlists.lastMonthChange.toFixed(1)}% 较上月
+                    {data.playlists.lastMonthChange.toFixed(1)}% 较上月
                   </p>
                 </CardContent>
               </Card>
@@ -108,20 +113,22 @@ const Home = () => {
                   <CardTitle className="text-2xl">用户量</CardTitle>
                   <CardDescription>
                     总计有
-                    {data?.users.total}位用户
+                    {data.users.total}位用户
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pl-2">
-                  <Overview data={data?.users.monthlyGrowth} />
+                  <Overview data={data.users.monthlyGrowth} />
                 </CardContent>
               </Card>
               <Card className="col-span-3">
                 <CardHeader>
                   <CardTitle className="text-2xl">播放量</CardTitle>
-                  <CardDescription>总计播放了12000首歌曲</CardDescription>
+                  <CardDescription>
+                    总计播放了{data.playCounts.total}首歌曲
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <PlayCount />
+                  <PlayCount data={data.playCounts.monthlyTrend} />
                 </CardContent>
               </Card>
             </div>

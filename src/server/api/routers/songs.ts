@@ -75,6 +75,7 @@ export const songsRouter = createTRPCRouter({
             song_artists: {
               create: [], // 保持关联结构
             },
+            play_count: 0,
           },
           include: { song_artists: true },
         });

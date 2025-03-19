@@ -1,36 +1,13 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
 import { type UserColumn } from "@/lib/user_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 export const columns: ColumnDef<UserColumn>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "id",
     header: "用户ID",
@@ -62,8 +39,17 @@ export const columns: ColumnDef<UserColumn>[] = [
     ),
   },
   {
-    accessorKey: "user_likes_songs",
-    header: "喜欢歌曲数量",
+    id: "user_likes_songs_count",
+    accessorFn: (row) => row._count?.user_likes_songs || 0,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>喜欢歌曲数量</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original._count?.user_likes_songs}
@@ -71,8 +57,17 @@ export const columns: ColumnDef<UserColumn>[] = [
     ),
   },
   {
-    accessorKey: "playlist_create_count",
-    header: "创建歌单数量",
+    id: "playlist_create_count",
+    accessorFn: (row) => row._count?.playlist || 0,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>创建歌单数量</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original._count?.playlist}
@@ -80,8 +75,17 @@ export const columns: ColumnDef<UserColumn>[] = [
     ),
   },
   {
-    accessorKey: "playlist_collect_count",
-    header: "收藏歌单数量",
+    id: "playlist_collect_count",
+    accessorFn: (row) => row._count?.playlist_collect || 0,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>收藏歌单数量</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original._count?.playlist_collect}
@@ -90,7 +94,15 @@ export const columns: ColumnDef<UserColumn>[] = [
   },
   {
     accessorKey: "create_time",
-    header: "创建时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>创建时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("create_time")), "yyyy-MM-dd HH:mm:ss")}
@@ -99,7 +111,15 @@ export const columns: ColumnDef<UserColumn>[] = [
   },
   {
     accessorKey: "update_time",
-    header: "更新时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>更新时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("update_time")), "yyyy-MM-dd HH:mm:ss")}

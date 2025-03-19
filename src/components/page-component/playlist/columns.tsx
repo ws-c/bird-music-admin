@@ -1,6 +1,5 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { type ColumnDef } from "@tanstack/react-table";
 import { type PlaylistColumn } from "@/lib/playlist_validators";
 import { CellAction } from "./cell-action";
@@ -8,31 +7,9 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { typeOptions } from "@/components/constants/genre";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 export const columns: ColumnDef<PlaylistColumn>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "id",
     header: "歌单ID",
@@ -105,7 +82,15 @@ export const columns: ColumnDef<PlaylistColumn>[] = [
   },
   {
     accessorKey: "isPrivate",
-    header: "是否私密",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>是否私密</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.getValue("isPrivate") === "1" ? (
@@ -115,10 +100,24 @@ export const columns: ColumnDef<PlaylistColumn>[] = [
         )}
       </span>
     ),
+    sortingFn: (rowA, rowB, columnId) => {
+      const valueA = rowA.getValue(columnId) === "1" ? 1 : 0;
+      const valueB = rowB.getValue(columnId) === "1" ? 1 : 0;
+      return valueA > valueB ? 1 : -1;
+    },
   },
   {
-    accessorKey: "playlist_songs",
-    header: "歌曲数量",
+    id: "playlist_songs",
+    accessorFn: (row) => row._count?.playlist_songs || 0,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>歌曲数量</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original._count?.playlist_songs}
@@ -134,7 +133,15 @@ export const columns: ColumnDef<PlaylistColumn>[] = [
   // },
   {
     accessorKey: "create_time",
-    header: "创建时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>创建时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("create_time")), "yyyy-MM-dd HH:mm:ss")}
@@ -143,7 +150,15 @@ export const columns: ColumnDef<PlaylistColumn>[] = [
   },
   {
     accessorKey: "update_time",
-    header: "更新时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>更新时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("update_time")), "yyyy-MM-dd HH:mm:ss")}

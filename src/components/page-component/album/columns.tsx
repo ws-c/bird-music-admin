@@ -6,6 +6,8 @@ import { type AlbumColumn } from "@/lib/album_validators";
 import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 export const columns: ColumnDef<AlbumColumn>[] = [
   {
     id: "select",
@@ -75,7 +77,15 @@ export const columns: ColumnDef<AlbumColumn>[] = [
   },
   {
     accessorKey: "release_date",
-    header: "发行日期",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>发行日期</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="whitespace-nowrap">
         {format(new Date(row.getValue("release_date")), "yyyy-MM-dd")}
@@ -83,8 +93,17 @@ export const columns: ColumnDef<AlbumColumn>[] = [
     ),
   },
   {
-    accessorKey: "_count",
-    header: "歌曲数量",
+    id: "song_count",
+    accessorFn: (row) => row._count?.songs || 0,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>歌曲数量</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {row.original._count?.songs}
@@ -93,7 +112,15 @@ export const columns: ColumnDef<AlbumColumn>[] = [
   },
   {
     accessorKey: "create_time",
-    header: "创建时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>创建时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("create_time")), "yyyy-MM-dd HH:mm:ss")}
@@ -102,7 +129,15 @@ export const columns: ColumnDef<AlbumColumn>[] = [
   },
   {
     accessorKey: "update_time",
-    header: "更新时间",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>更新时间</span>
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
         {format(new Date(row.getValue("update_time")), "yyyy-MM-dd HH:mm:ss")}

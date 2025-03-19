@@ -1,4 +1,3 @@
-// overview.router.ts
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 // 类型定义
@@ -22,6 +21,13 @@ export type TotalStats = {
   users: {
     total: number;
     monthlyGrowth: Array<{
+      month: string;
+      count: number;
+    }>;
+  };
+  playCounts: {
+    total: number;
+    monthlyTrend: Array<{
       month: string;
       count: number;
     }>;
@@ -53,6 +59,8 @@ export const OverviewRouter = createTRPCRouter({
       lastMonthPlaylists,
       totalUsers,
       monthlyGrowth,
+      totalPlayCount,
+      monthlyPlayCounts,
     ] = await Promise.all([
       // 歌曲总量
       ctx.prisma.songs.count(),
@@ -113,6 +121,31 @@ export const OverviewRouter = createTRPCRouter({
       GROUP BY DATE_FORMAT(create_time, '%Y-%m')
       ORDER BY month ASC
     `,
+      // 播放量
+      ctx.prisma.songs.aggregate({
+        _sum: {
+          play_count: true,
+        },
+      }),
+      // 过去12个月每月播放量（从聚合表查询）
+      ctx.prisma.$queryRaw<{ month: string; count: bigint }[]>`
+            WITH months AS (
+              SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL n MONTH), '%Y-%m') AS month
+              FROM (
+                SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+                UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
+                UNION SELECT 10 UNION SELECT 11
+              ) AS seq
+            )
+            SELECT 
+              m.month,
+              COALESCE(SUM(sms.play_count), 0) AS count
+            FROM months m
+            LEFT JOIN song_monthly_stat sms
+              ON DATE_FORMAT(CONCAT(sms.year, '-', sms.month, '-01'), '%Y-%m') = m.month
+            GROUP BY m.month
+            ORDER BY m.month ASC
+          `,
     ]);
 
     // 计算增长率
@@ -154,6 +187,13 @@ export const OverviewRouter = createTRPCRouter({
             count: found ? Number(found.count) : 0,
           };
         }),
+      },
+      playCounts: {
+        total: totalPlayCount._sum.play_count || 0,
+        monthlyTrend: monthlyPlayCounts.map((p) => ({
+          month: p.month,
+          count: Number(p.count),
+        })),
       },
     };
   }),
