@@ -10,7 +10,7 @@ export const AlbumBaseSchema = z.object({
 
   desc: z
     .string()
-    .max(1000, "描述最长1000个字符")
+    .max(2000, "描述最长2000个字符")
     .optional()
     .transform((str) => str?.trim() || null),
 

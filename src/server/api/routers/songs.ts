@@ -3,11 +3,10 @@ import { updateSongFormSchema, SongBaseSchema } from "@/lib/song_validators";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "@/server/api/trpc";
 
 export const songsRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.songs.findMany({
       orderBy: {
         update_time: "desc",
@@ -33,7 +32,7 @@ export const songsRouter = createTRPCRouter({
     });
   }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.songs.findUnique({

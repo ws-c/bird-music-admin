@@ -3,11 +3,10 @@ import { updateAlbumFormSchema, AlbumBaseSchema } from "@/lib/album_validators";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "@/server/api/trpc";
 
 export const albumsRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.albums.findMany({
       orderBy: {
         release_date: "desc",
@@ -27,7 +26,7 @@ export const albumsRouter = createTRPCRouter({
     });
   }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.albums.findUnique({

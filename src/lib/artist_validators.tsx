@@ -10,7 +10,7 @@ export const ArtistBaseSchema = z.object({
 
   biography: z
     .string()
-    .max(1000, "简介长度不能超过1000个字符")
+    .max(2000, "简介长度不能超过2000个字符")
     .optional()
     .transform((str) => str?.trim() || null),
 
