@@ -11,7 +11,7 @@ export const PlaylistBaseSchema = z.object({
 
   desc: z
     .string()
-    .max(2000, "描述最长2000个字符")
+    .max(60, "描述最长60个字符")
     .optional()
     .transform((str) => str?.trim() || null),
 

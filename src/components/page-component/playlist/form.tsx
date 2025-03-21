@@ -221,7 +221,7 @@ export const PlaylistForm = ({ playlists }: PlaylistFormProps) => {
                         value={field.value || ""}
                         placeholder="输入歌单描述（可选）"
                         disabled={loading}
-                        rows={6} // 设置默认显示行高度
+                        rows={4} // 设置默认显示行高度
                         className="resize-y" // 允许垂直调整大小
                       />
                     </FormControl>
