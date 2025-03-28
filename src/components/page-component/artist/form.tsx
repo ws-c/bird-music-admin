@@ -47,12 +47,18 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
     defaultValues: artists ?? undefined,
   });
 
+  // 获取艺人列表的查询（用于操作后刷新）
+  const { refetch } = api.artists.getAll.useQuery(undefined, {
+    enabled: false,
+  });
+
   const { mutate: createArtist } = api.artists.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/artists");
     },
   });
@@ -61,8 +67,9 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/artists");
     },
   });
@@ -71,8 +78,9 @@ export const ArtistForm = ({ artists }: ArtistFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("艺人删除成功");
+      await refetch();
       router.push("/artists");
     },
   });

@@ -55,6 +55,11 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // 获取专辑列表的查询（用于操作后刷新）
+  const { refetch } = api.albums.getAll.useQuery(undefined, {
+    enabled: false,
+  });
+
   const title = albums ? "编辑专辑" : "新建专辑";
   const description = albums ? "修改专辑信息" : "添加新专辑";
   const toastMessage = albums ? "专辑更新成功" : "专辑创建成功";
@@ -69,8 +74,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/albums");
     },
   });
@@ -79,8 +85,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/albums");
     },
   });
@@ -89,8 +96,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("专辑删除成功");
+      await refetch();
       router.push("/albums");
     },
   });
@@ -153,7 +161,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">标题：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      标题：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <Input
                         {...field}
@@ -174,7 +184,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">作者：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      作者：
+                    </FormLabel>
                     <Select
                       disabled={loading}
                       onValueChange={(value) => field.onChange(Number(value))}
@@ -209,7 +221,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">发行日期：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      发行日期：
+                    </FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl className="flex-grow">
@@ -236,6 +250,10 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
                           onSelect={field.onChange}
                           disabled={(date) => date > new Date()}
                           initialFocus
+                          captionLayout="dropdown-buttons"
+                          fromYear={1950}
+                          toYear={new Date().getFullYear()}
+                         
                         />
                       </PopoverContent>
                     </Popover>
@@ -252,7 +270,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0">封面：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 text-right">
+                      封面：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <ImageUploader
                         value={field.value}
@@ -273,7 +293,9 @@ export const AlbumForm = ({ albums, artists }: AlbumFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-start gap-2">
-                    <FormLabel className=" w-20 text-right flex-shrink-0 pt-2">描述：</FormLabel>
+                    <FormLabel className=" w-20 flex-shrink-0 pt-2 text-right">
+                      描述：
+                    </FormLabel>
                     <FormControl className="flex-grow">
                       <Textarea
                         {...field}

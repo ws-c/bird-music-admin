@@ -6,6 +6,7 @@ const client = new OSS({
   accessKeyId: process.env.NEXT_PUBLIC_OSS_ACCESS_KEY_ID!,
   accessKeySecret: process.env.NEXT_PUBLIC_OSS_ACCESS_KEY_SECRET!,
   bucket: process.env.NEXT_PUBLIC_OSS_BUCKET,
+  secure: true, // 使用 HTTPS 连接
 });
 
 // 上传文件到阿里云 OSS

@@ -47,12 +47,18 @@ export const UserForm = ({ users }: UserFormProps) => {
     defaultValues: users ?? undefined,
   });
 
+  // 获取用户列表的查询（用于操作后刷新）
+  const { refetch } = api.users.getAll.useQuery(undefined, {
+    enabled: false,
+  });
+
   const { mutate: createUser } = api.users.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/users");
     },
   });
@@ -61,8 +67,9 @@ export const UserForm = ({ users }: UserFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/users");
     },
   });
@@ -71,8 +78,9 @@ export const UserForm = ({ users }: UserFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("用户删除成功");
+      await refetch();
       router.push("/users");
     },
   });

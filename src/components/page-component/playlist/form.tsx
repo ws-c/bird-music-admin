@@ -57,12 +57,18 @@ export const PlaylistForm = ({ playlists }: PlaylistFormProps) => {
       : undefined,
   });
 
+  // 获取歌单列表的查询（用于操作后刷新）
+  const { refetch } = api.playlists.getAll.useQuery(undefined, {
+    enabled: false,
+  });
+
   const { mutate: createPlaylist } = api.playlists.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/playlists");
     },
   });
@@ -71,8 +77,9 @@ export const PlaylistForm = ({ playlists }: PlaylistFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/playlists");
     },
   });
@@ -81,8 +88,9 @@ export const PlaylistForm = ({ playlists }: PlaylistFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("歌单删除成功");
+      await refetch();
       router.push("/playlists");
     },
   });

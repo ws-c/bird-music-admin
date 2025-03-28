@@ -65,12 +65,18 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
     }
   };
 
+  // 获取歌曲列表的查询（用于操作后刷新）
+  const { refetch } = api.songs.getAll.useQuery(undefined, {
+    enabled: false,
+  });
+
   const { mutate: createSong } = api.songs.create.useMutation({
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/songs");
     },
   });
@@ -79,8 +85,9 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(toastMessage);
+      await refetch();
       router.push("/songs");
     },
   });
@@ -89,8 +96,9 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
     onError: (err) => {
       toast.error(err.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("歌曲删除成功");
+      await refetch();
       router.push("/songs");
     },
   });
@@ -138,8 +146,8 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
     if (!file) return;
 
     // 文件大小验证
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("文件大小不能超过5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("文件大小不能超过10MB");
       return;
     }
 
