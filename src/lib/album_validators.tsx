@@ -12,6 +12,7 @@ export const AlbumBaseSchema = z.object({
     .string()
     .max(2000, "描述最长2000个字符")
     .optional()
+    .nullable()
     .transform((str) => str?.trim() || null),
 
   artist_id: z.coerce

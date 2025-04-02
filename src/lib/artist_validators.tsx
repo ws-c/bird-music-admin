@@ -12,6 +12,7 @@ export const ArtistBaseSchema = z.object({
     .string()
     .max(2000, "简介长度不能超过2000个字符")
     .optional()
+    .nullable()
     .transform((str) => str?.trim() || null),
 
   image_url: z

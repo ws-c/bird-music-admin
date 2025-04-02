@@ -13,6 +13,7 @@ export const PlaylistBaseSchema = z.object({
     .string()
     .max(60, "描述最长60个字符")
     .optional()
+    .nullable()
     .transform((str) => str?.trim() || null),
 
   img: z
