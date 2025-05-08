@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 // 类型定义
 export type TotalStats = {
@@ -43,7 +43,7 @@ const getLastMonthRange = () => {
 };
 
 export const OverviewRouter = createTRPCRouter({
-  getTotalStats: protectedProcedure.query(async ({ ctx }): Promise<TotalStats> => {
+  getTotalStats: publicProcedure.query(async ({ ctx }): Promise<TotalStats> => {
     // 获取时间范围
     const lastMonth = getLastMonthRange();
 

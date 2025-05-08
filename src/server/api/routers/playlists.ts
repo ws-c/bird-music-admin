@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
 import {
   PlaylistBaseSchema,
@@ -10,7 +11,7 @@ import {
 } from "@/lib/playlist_validators";
 
 export const playlistsRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.playlist.findMany({
       include: {
         _count: {
@@ -25,7 +26,7 @@ export const playlistsRouter = createTRPCRouter({
     });
   }),
 
-  getById: protectedProcedure
+  getById: publicProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.playlist.findUnique({

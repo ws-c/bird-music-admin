@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
 import {
   ArtistBaseSchema,
@@ -10,7 +11,7 @@ import {
 
 export const artistsRouter = createTRPCRouter({
   // 获取所有艺人（按更新时间排序）
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.artists.findMany({
       orderBy: {
         update_time: "desc",
@@ -33,7 +34,7 @@ export const artistsRouter = createTRPCRouter({
   }),
 
   // 获取艺人详情
-  getById: protectedProcedure
+  getById: publicProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.artists.findUnique({

@@ -3,11 +3,12 @@ import { updateUserFormSchema, UserBaseSchema } from "@/lib/user_validators";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "@/server/api/trpc";
 import bcrypt from "bcryptjs";
 
 export const usersRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.users.findMany({
       orderBy: {
         create_time: "desc",
@@ -29,7 +30,7 @@ export const usersRouter = createTRPCRouter({
     });
   }),
 
-  getById: protectedProcedure
+  getById: publicProcedure
     .input(z.number().int())
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.users.findUnique({

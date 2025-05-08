@@ -15,9 +15,10 @@ import { api } from "@/utils/api";
 import { type TotalStats } from "@/server/api/routers/overview";
 import { Loading } from "@/components/common/loading";
 const Home = () => {
-  const { data, isLoading, error } = api.overview.getTotalStats.useQuery<
-    TotalStats
-  >();
+  const { data, isLoading, error } =
+    api.overview.getTotalStats.useQuery<TotalStats>(undefined, {
+      staleTime: 60 * 1000, // 1分钟缓存
+    });
   if (isLoading) return <Loading />;
   if (error) return <div>Error: {error.message}</div>;
   console.log(data);
@@ -66,9 +67,7 @@ const Home = () => {
                   <Album />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold ">
-                    {data.albums.total}
-                  </div>
+                  <div className="text-2xl font-bold ">{data.albums.total}</div>
                   <p className="text-xs text-muted-foreground">
                     {data.albums.lastMonthChange.toFixed(1)}% 较上月
                   </p>
@@ -82,9 +81,7 @@ const Home = () => {
                   <Speaker />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {data.artists.total}
-                  </div>
+                  <div className="text-2xl font-bold">{data.artists.total}</div>
                   <p className="text-xs text-muted-foreground">
                     {data.artists.lastMonthChange.toFixed(1)}% 较上月
                   </p>
