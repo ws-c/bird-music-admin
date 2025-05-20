@@ -57,7 +57,7 @@ export function CellAction({ data }: CellActionProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>编辑歌曲</p>
+            <p>编辑单曲</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

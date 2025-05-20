@@ -18,15 +18,15 @@ export const SongClient = ({ data }: SongClientProps) => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title="歌曲管理"
-          description="管理您的歌曲信息，进行歌曲的创建、编辑和删除"
+          title="单曲管理"
+          description="管理您的单曲信息，进行单曲的创建、编辑和删除"
         />
         <Button
           onClick={() => {
             router.push("/songs/new");
           }}
         >
-          <Plus className="mr-2 h-4 w-4" /> 新建歌曲
+          <Plus className="mr-2 h-4 w-4" /> 新建单曲
         </Button>
       </div>
       <Separator />

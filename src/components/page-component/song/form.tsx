@@ -44,9 +44,9 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const title = songs ? "编辑歌曲" : "新建歌曲";
-  const description = songs ? "修改歌曲信息" : "添加新歌曲";
-  const toastMessage = songs ? "歌曲更新成功" : "歌曲创建成功";
+  const title = songs ? "编辑单曲" : "新建单曲";
+  const description = songs ? "修改单曲信息" : "添加新单曲";
+  const toastMessage = songs ? "单曲更新成功" : "单曲创建成功";
   const action = songs ? "保存" : "创建";
 
   const form = useForm<SongFormValues>({
@@ -65,7 +65,7 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
     }
   };
 
-  // 获取歌曲列表的查询（用于操作后刷新）
+  // 获取单曲列表的查询（用于操作后刷新）
   const { refetch } = api.songs.getAll.useQuery(undefined, {
     enabled: false,
   });
@@ -97,7 +97,7 @@ export const SongForm = ({ songs, artists, albums }: SongFormProps) => {
       toast.error(err.message);
     },
     onSuccess: async () => {
-      toast.success("歌曲删除成功");
+      toast.success("单曲删除成功");
       await refetch();
       router.push("/songs");
     },
